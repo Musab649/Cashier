@@ -100,6 +100,7 @@ function login() {
   document.getElementById("username").textContent = currentUser.name;
   setupDataEntrySite();
   showSection("dashboard");
+  clearDataEntryForm();
 }
 
 // ضبط موقع شاشة إدخال البيانات بناء على المستخدم
@@ -135,3 +136,210 @@ function updatePrice() {
     const total = unitPrice * quantity;
     document.getElementById("unitPrice").value = unitPrice;
     document.getElementById("totalPrice").value = total;
+  } else {
+    document.getElementById("unitPrice").value = 0;
+    document.getElementById("totalPrice").value = 0;
+  }
+}
+
+// إضافة مستخدم جديد
+function addUser() {
+  const id = document.getElementById("newUserId").value.trim();
+  const name = document.getElementById("newUserName").value.trim();
+  const role = document.getElementById("newUserRole").value;
+  const site = document.getElementById("newUserSite").value;
+
+  if (!id || !name || !site) {
+    alert("يرجى ملء جميع حقول المستخدم");
+    return;
+  }
+  if (users.find(u => u.id === id)) {
+    alert("هذا الرقم الوظيفي موجود مسبقاً");
+    return;
+  }
+  users.push({ id, name, role, site });
+  refreshUsersTable();
+  clearUserForm();
+}
+
+// حذف مستخدم
+function deleteUser(id) {
+  if (confirm("هل أنت متأكد من حذف المستخدم؟")) {
+    users = users.filter(u => u.id !== id);
+    refreshUsersTable();
+  }
+}
+
+// تحديث جدول المستخدمين
+function refreshUsersTable() {
+  const tbody = document.querySelector("#usersTable tbody");
+  tbody.innerHTML = "";
+  users.forEach(u => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${u.id}</td>
+      <td>${u.name}</td>
+      <td>${u.role}</td>
+      <td>${u.site}</td>
+      <td>
+        <button class="action-btn delete" onclick="deleteUser('${u.id}')">حذف</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  // تحديث خيارات إضافة المستخدم
+  fillSelect("newUserSite", sites);
+}
+
+// تفريغ نموذج إضافة مستخدم
+function clearUserForm() {
+  document.getElementById("newUserId").value = "";
+  document.getElementById("newUserName").value = "";
+  document.getElementById("newUserRole").value = "user";
+  document.getElementById("newUserSite").value = "";
+}
+
+// إضافة موقع جديد
+function addSite() {
+  const site = document.getElementById("newSite").value.trim();
+  if (!site) {
+    alert("يرجى إدخال اسم الموقع");
+    return;
+  }
+  if (sites.includes(site)) {
+    alert("الموقع موجود مسبقاً");
+    return;
+  }
+  sites.push(site);
+  refreshSitesList();
+  document.getElementById("newSite").value = "";
+}
+
+// تحديث قائمة المواقع
+function refreshSitesList() {
+  const list = document.getElementById("sitesList");
+  list.innerHTML = "";
+  sites.forEach(site => {
+    const li = document.createElement("li");
+    li.textContent = site;
+    list.appendChild(li);
+  });
+}
+
+// إضافة نوع ذبيحة جديد
+function addAnimal() {
+  const animal = document.getElementById("newAnimal").value.trim();
+  if (!animal) {
+    alert("يرجى إدخال نوع ذبيحة");
+    return;
+  }
+  if (animals.includes(animal)) {
+    alert("نوع الذبيحة موجود مسبقاً");
+    return;
+  }
+  animals.push(animal);
+  refreshAnimalsList();
+  document.getElementById("newAnimal").value = "";
+}
+
+// تحديث قائمة أنواع الذبائح
+function refreshAnimalsList() {
+  const list = document.getElementById("animalsList");
+  list.innerHTML = "";
+  animals.forEach(animal => {
+    const li = document.createElement("li");
+    li.textContent = animal;
+    list.appendChild(li);
+  });
+  fillSelect("priceAnimal", animals);
+  fillSelect("animalType", animals);
+}
+
+// إضافة نوع تقطيع جديد
+function addCutting() {
+  const cutting = document.getElementById("newCutting").value.trim();
+  if (!cutting) {
+    alert("يرجى إدخال نوع تقطيع");
+    return;
+  }
+  if (cuttings.includes(cutting)) {
+    alert("نوع التقطيع موجود مسبقاً");
+    return;
+  }
+  cuttings.push(cutting);
+  refreshCuttingsList();
+  document.getElementById("newCutting").value = "";
+}
+
+// تحديث قائمة أنواع التقطيع
+function refreshCuttingsList() {
+  const list = document.getElementById("cuttingsList");
+  list.innerHTML = "";
+  cuttings.forEach(cutting => {
+    const li = document.createElement("li");
+    li.textContent = cutting;
+    list.appendChild(li);
+  });
+  fillSelect("priceCutting", cuttings);
+  fillSelect("cuttingType", cuttings);
+}
+
+// تعيين سعر جديد
+function setPrice() {
+  const animal = document.getElementById("priceAnimal").value;
+  const cutting = document.getElementById("priceCutting").value;
+  const priceVal = parseFloat(document.getElementById("priceValue").value);
+
+  if (!animal || !cutting || isNaN(priceVal) || priceVal <= 0) {
+    alert("يرجى إدخال بيانات صحيحة للسعر");
+    return;
+  }
+
+  if (!prices[animal]) {
+    prices[animal] = {};
+  }
+  prices[animal][cutting] = priceVal;
+
+  alert(`تم تعيين سعر ${priceVal} لـ ${animal} - ${cutting}`);
+
+  document.getElementById("priceValue").value = "";
+}
+
+// البحث عن بيانات المتعامل بناءً على رقم التليفون
+function lookupClient() {
+  const phone = document.getElementById("phone").value.trim();
+  if (!phone) {
+    return;
+  }
+  const found = invoices.find(inv => inv.phone === phone);
+  if (found) {
+    document.getElementById("clientName").value = found.clientName;
+  } else {
+    document.getElementById("clientName").value = "";
+  }
+}
+
+// تفريغ بيانات إدخال البيانات
+function clearDataEntryForm() {
+  document.getElementById("invoiceNumber").value = invoiceCounter.toString().padStart(5, "0");
+  document.getElementById("phone").value = "";
+  document.getElementById("clientName").value = "";
+  document.getElementById("animalType").selectedIndex = 0;
+  document.getElementById("cuttingType").selectedIndex = 0;
+  document.getElementById("animalNumber").selectedIndex = 0;
+  document.getElementById("stickerNumber").selectedIndex = 0;
+  document.getElementById("quantity").selectedIndex = 0;
+  document.getElementById("unitPrice").value = "";
+  document.getElementById("totalPrice").value = "";
+  document.querySelector('input[name="paymentType"][value="كاش"]').checked = true;
+}
+
+// حفظ بيانات الفاتورة
+function saveData() {
+  if (!currentUser) {
+    alert("يرجى تسجيل الدخول أولاً");
+    return;
+  }
+
+  // لو المستخدم مش أدمن، الموقع يثبت على موقعه
