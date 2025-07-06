@@ -1,0 +1,56 @@
+body {
+  font-family: Arial, sans-serif;
+  direction: rtl;
+  text-align: center;
+  background: #f7f7f7;
+}
+
+.section {
+  display: none;
+  padding: 30px;
+}
+
+.section.active {
+  display: block;
+}
+
+h1.blinking {
+  animation: blink 1.5s infinite;
+}
+
+input, select {
+  font-size: 18px;
+  padding: 8px;
+  margin: 5px;
+}
+
+button {
+  background: #009688;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  margin: 5px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #00796b;
+}
+
+table {
+  width: 80%;
+  margin: 20px auto;
+  border-collapse: collapse;
+  background: #fff;
+}
+
+th, td {
+  border: 1px solid #ccc;
+  padding: 8px;
+}
+
+@keyframes blink {
+  50% { opacity: 0.3; }
+}
